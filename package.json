@@ -1,0 +1,10 @@
+{
+  "name": "image-collection",
+  "description": "AMNH image collection visualizer",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "express": "^4.16.4"
+  }
+}

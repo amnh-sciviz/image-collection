@@ -11,7 +11,7 @@ from pprint import pprint
 from MulticoreTSNE import MulticoreTSNE as TSNE
 import sys
 
-from lib import *
+from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()

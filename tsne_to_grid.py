@@ -8,7 +8,7 @@ from pprint import pprint
 import rasterfairy
 import sys
 
-from lib import *
+from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()

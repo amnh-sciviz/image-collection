@@ -8,7 +8,7 @@ from pprint import pprint
 import random
 import sys
 
-from lib import *
+from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()
@@ -45,6 +45,7 @@ for xy, fn in zip(grid, filenames):
     printProgress(i+1, fileCount)
     i += 1
 
+makeDir(a.OUTPUT_FILE)
 print("Saving image...")
 baseImage.save(a.OUTPUT_FILE)
 print("Created %s" % a.OUTPUT_FILE)

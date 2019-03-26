@@ -12,7 +12,7 @@ import pickle
 from sklearn.decomposition import PCA
 import sys
 
-from lib import *
+from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()

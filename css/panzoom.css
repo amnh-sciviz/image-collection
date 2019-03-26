@@ -1,0 +1,39 @@
+body {
+  font-family: sans-serif;
+  background: black;
+}
+
+.panzoom {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.key {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: #ddd;
+  padding: 1rem;
+  border: 1px solid #bbb;
+}
+.key > div {
+  padding: 0.5rem 0;
+}
+.people {
+  color: #1B5E20; /* green */
+}
+.exhibitions {
+  color: #B71C1C; /* red */
+}
+.temp-exhibitions {
+  color: #E65100; /* orange */
+}
+.departments {
+  color: #4527A0; /* purple */
+}
+.expeditions {
+  color: #0D47A1; /* blue */
+}

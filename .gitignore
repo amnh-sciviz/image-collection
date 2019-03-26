@@ -5,3 +5,4 @@ tmp/*
 images/*
 !images/.keep
 node_modules/
+package-lock.json
