@@ -1,0 +1,7 @@
+*.pyc
+.DS_Store
+output/*
+tmp/*
+images/*
+!images/.keep
+node_modules/
