@@ -1,6 +1,7 @@
 body {
   font-family: sans-serif;
   background: black;
+  color: white;
 }
 
 .panzoom {
@@ -11,29 +12,30 @@ body {
   left: 0;
 }
 
-.key {
+.highlight {
+  width: 128px;
+  height: 128px;
   position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background: #ddd;
-  padding: 1rem;
-  border: 1px solid #bbb;
+  top: 0;
+  left: 0;
+  border: 10px solid rgba(255,0,0,0.8);
+  opacity: 0;
+  box-sizing: border-box;
+  transform-origin: 0 0;
+  transition: opacity 0.5s ease-in-out;
+  display: none;
+  /* z-index: 1000; */
 }
-.key > div {
-  padding: 0.5rem 0;
+.highlight.active {
+  opacity: 1;
+  display: block;
 }
-.people {
-  color: #1B5E20; /* green */
-}
-.exhibitions {
-  color: #B71C1C; /* red */
-}
-.temp-exhibitions {
-  color: #E65100; /* orange */
-}
-.departments {
-  color: #4527A0; /* purple */
-}
-.expeditions {
-  color: #0D47A1; /* blue */
+
+.debug {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: rgba(0,0,0,0.8);
+  padding: 0.5rem 1rem;
+  width: 20%;
 }
