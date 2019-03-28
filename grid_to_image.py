@@ -37,8 +37,8 @@ baseImage = Image.new('RGB', (imgW, imgH), (0,0,0))
 i = 0
 for xy, fn in zip(grid, filenames):
     col, row = tuple(xy)
-    x = int(round((col-1) * tileW))
-    y = int(round((row-1) * tileH))
+    x = int(round(col * tileW))
+    y = int(round(row * tileH))
     im = Image.open(fn)
     im = fillImage(im, tileW, tileH)
     baseImage.paste(im, (x, y))
