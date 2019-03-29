@@ -13,7 +13,7 @@ from lib.utils import *
 # input
 parser = argparse.ArgumentParser()
 parser.add_argument('-in', dest="INPUT_FILE", default="output/photographic_tsne.csv", help="Input csv file")
-parser.add_argument('-out', dest="OUTPUT_FILE", default="output/photographic_grid.csv", help="Output csv file")
+parser.add_argument('-out', dest="OUTPUT_FILE", default="data/photographic_grid.csv", help="Output csv file")
 a = parser.parse_args()
 
 model = np.loadtxt(a.INPUT_FILE, delimiter=",")

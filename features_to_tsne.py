@@ -20,7 +20,7 @@ parser.add_argument('-components', dest="COMPONENTS", default=2, type=int, help=
 parser.add_argument('-rate', dest="LEARNING_RATE", default=150, type=int, help="Learning rate: increase if too dense, decrease if too uniform")
 parser.add_argument('-angle', dest="ANGLE", default=0.1, type=float, help="Angle: increase to make faster, decrease to make more accurate")
 parser.add_argument('-jobs', dest="JOBS", default=4, type=int, help="Concurrent jobs to run")
-parser.add_argument('-out', dest="OUTPUT_FILE", default="output/photographic_tsne.csv", help="Output TSNE file")
+parser.add_argument('-out', dest="OUTPUT_FILE", default="data/photographic_tsne.csv", help="Output TSNE file")
 a = parser.parse_args()
 
 featureVectors = None
