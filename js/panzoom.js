@@ -66,7 +66,6 @@ var PanZoom = (function() {
     this.loadData();
     this.loadListeners();
 
-
     if (opt.debug) this.loadDebug();
   };
 
@@ -80,6 +79,7 @@ var PanZoom = (function() {
 
   PanZoom.prototype.loadDebug = function(){
     $debug = $("#debug");
+    $debug.addClass("active");
   };
 
   // https://openseadragon.github.io/examples/viewport-coordinates/

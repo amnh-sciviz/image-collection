@@ -111,4 +111,8 @@ a.button {
   background: rgba(0,0,0,0.8);
   padding: 0.5rem 1rem;
   width: 20%;
+  display: none;
+}
+.debug.active {
+  display: block;
 }
