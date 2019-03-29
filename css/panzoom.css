@@ -2,6 +2,8 @@ body {
   font-family: sans-serif;
   background: black;
   color: white;
+  font-size: 16px;
+  overflow: hidden;
 }
 
 .panzoom {
@@ -11,6 +13,56 @@ body {
   top: 0;
   left: 0;
 }
+.metadata {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  background: rgba(0,0,0,0.9);
+  padding: 1rem;
+  z-index: 10;
+  opacity: 0;
+  transform: translate3d(0, 100%, 0);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+.metadata.active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.metadata h2 {
+  display: block;
+  width: 40vh;
+  margin-top: 0;
+}
+.metadata .metadata-image {
+  display: block;
+  width: 40vh;
+  height: 20vh;
+  background: left top no-repeat;
+  background-size: contain;
+}
+a.close-link {
+  display: block;
+  position: absolute;
+  top: -40px;
+  right: 0;
+  height: 40px;
+  padding: 0 1rem;
+  line-height: 40px;
+  background: rgba(0,0,0,0.9);
+  color: white;
+  text-decoration: none;
+}
+a.button {
+  color: white;
+  background: #004BB4;
+  padding: 1rem 2rem;
+  display: inline-block;
+  margin: 1rem 0;
+  text-decoration: none;
+}
 
 .highlight {
   width: 128px;
@@ -18,7 +70,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  border: 10px solid rgba(255,0,0,0.8);
+  outline: 10px solid rgba(255,0,0,0.8);
   opacity: 0;
   box-sizing: border-box;
   transform-origin: 0 0;
@@ -27,6 +79,27 @@ body {
   /* z-index: 1000; */
 }
 .highlight.active {
+  opacity: 1;
+  display: block;
+}
+.highlight h2 {
+  position: absolute;
+  bottom: 100%;
+  width: 200%;
+  left: -50%;
+  background: rgba(0,0,0,0.8);
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
+  opacity: 0;
+  transition: opacity 0.5 ease-in-out;
+  display: none;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: normal;
+  line-height: 1.5;
+  transform-origin: 50% 100%;
+}
+.highlight h2.active {
   opacity: 1;
   display: block;
 }

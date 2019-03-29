@@ -5,7 +5,8 @@ var PanZoom = (function() {
   var viewer, tracker, opt;
   var imageW, imageH, cellW, cellH, ncellW, ncellH;
   var lastWebPoint, isAnimating, animateTimeout;
-  var $highlight, $debug;
+  var metadata, currentDataIndex;
+  var $highlight, $title, $metadata, $metadataContent, $debug;
 
   function PanZoom(config) {
     var defaults = {
@@ -14,10 +15,20 @@ var PanZoom = (function() {
       debug: false,
       cols: 114,
       rows: 116,
-      highlightDelay: 10
+      highlightDelay: 10,
+      metadataUrl: "data/photographic_images.json"
     };
     opt = $.extend({}, defaults, config);
     this.init();
+  }
+
+  function loadJSONData(url){
+    var deferred = $.Deferred();
+    $.getJSON(url, function(data) {
+      console.log("Loaded data.");
+      deferred.resolve(data);
+    });
+    return deferred.promise();
   }
 
   function floorToNearest(value, nearest) {
@@ -52,9 +63,19 @@ var PanZoom = (function() {
         tileSources: opt.tileSources
     });
 
+    this.loadData();
     this.loadListeners();
 
+
     if (opt.debug) this.loadDebug();
+  };
+
+  PanZoom.prototype.loadData = function(){
+    var _this = this;
+    var dataPromise = loadJSONData(opt.metadataUrl);
+    $.when(dataPromise).done(function(results){
+      _this.onDataLoad(results);
+    });
   };
 
   PanZoom.prototype.loadDebug = function(){
@@ -84,10 +105,21 @@ var PanZoom = (function() {
       cellW = 1.0 * imageW / opt.cols;
       cellH = 1.0 * imageH / opt.rows;
 
-      $(".openseadragon-canvas").append($('<a href="#" id="highlight" class="highlight" />'));
+      $(".openseadragon-canvas").append($('<a href="#" id="highlight" class="highlight"><h2 id="highlight-title" class="title"></h2></a>'));
       $highlight = $("#highlight");
+      $title = $("#highlight-title");
+      $metadata = $("#metadata");
+      $metadataContent = $("#metadata-content");
       $highlight.on("click", function(e){
-        console.log("highlightClicked")
+        if ($metadata.hasClass("active")) {
+          $metadata.removeClass("active");
+        } else {
+          _this.renderMetadata();
+        }
+      });
+
+      $(".close-link").on("click", function(){
+        $metadata.removeClass("active");
       });
 
       viewer.addHandler('canvas-click', function(e){
@@ -114,6 +146,10 @@ var PanZoom = (function() {
     this.onMouseMove();
   };
 
+  PanZoom.prototype.onDataLoad = function(results){
+    metadata = results;
+  };
+
   PanZoom.prototype.onMouseMove = function(){
     var vp = getViewportDetails();
     if (!vp) return false;
@@ -125,7 +161,7 @@ var PanZoom = (function() {
 
   PanZoom.prototype.renderDebug = function(details){
     if (!opt.debug) return false;
-    
+
     details = details || getViewportDetails();
     if (!details) return false;
 
@@ -180,8 +216,58 @@ var PanZoom = (function() {
     // transform and activate
     $highlight.css({
       "transform": "translate3d("+vpX+"px, "+vpY+"px, 0) scale3d("+scale+","+scale+","+scale+")"
-    })
+    });
     $highlight.addClass("active");
+    $title.css({
+      "transform": "scale3d("+(1.0/scale)+","+(1.0/scale)+","+(1.0/scale)+")"
+    });
+
+    var col = parseInt(nImageX * opt.cols);
+    var row = parseInt(nImageY * opt.rows);
+    var dataIndex = parseInt(row * opt.cols + col);
+    currentDataIndex = dataIndex;
+    this.renderTitle(dataIndex);
+
+    if ($metadata.hasClass("active")) this.renderMetadata(dataIndex);
+  }
+
+  PanZoom.prototype.renderMetadata = function(dataIndex){
+    if (metadata===undefined) return;
+
+    dataIndex = dataIndex || currentDataIndex;
+    var id = metadata.ids[dataIndex];
+
+    // hide title and metadata if it doesn't exist
+    if (id===undefined || id.length <= 0) {
+      $metadata.removeClass('active');
+      return;
+    }
+
+    var title = metadata.titles[dataIndex];
+    var filename = metadata.filenames[dataIndex];
+    var url = metadata.itemBaseUrl + id;
+    var imageUrl = metadata.imageBaseUrl + filename;
+
+    var html = '<h2>' + title + '</h2>';
+    html += '<div class="metadata-image" style="background-image: url('+imageUrl+');"></div>';
+    html += '<a href="'+url+'" class="button" target="_blank">View on full record</a>';
+    $metadataContent.html(html)
+    $metadata.addClass('active');
+  }
+
+  PanZoom.prototype.renderTitle = function(dataIndex){
+    if (metadata===undefined) return;
+
+    dataIndex = dataIndex || currentDataIndex;
+    var title = metadata.titles[dataIndex];
+
+    // hide title and metadata if it doesn't exist
+    if (title===undefined || title.length <= 0) {
+      $title.removeClass("active");
+      return;
+    }
+
+    $title.text(title).addClass("active");
   }
 
 

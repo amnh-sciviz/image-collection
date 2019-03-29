@@ -40,11 +40,11 @@ if len(data) <= 0:
 print("Matching metadata with image filenames...")
 matchedEntries = []
 for i, fn in enumerate(imageFiles):
-    basefn = os.path.basename(fn)
+    basefn = io.getFileBasename(fn)
     matched = False
     for j, entry in enumerate(data):
         id = entry["id"]
-        if basefn.startswith(id):
+        if basefn == id:
             matchedEntries.append(j)
             matched = True
             break
@@ -67,10 +67,10 @@ ids = ["" for i in range(gridW*gridH)]
 filenames = ["" for i in range(gridW*gridH)]
 titles = ["" for i in range(gridW*gridH)]
 
-for i in matchedEntries:
-    entry = data[i]
-    col, row = tuple(grid[i])
-    gridIndex = int(row * gridW + col)
+for fileIndex, dataIndex in enumerate(matchedEntries):
+    entry = data[dataIndex]
+    col, row = tuple(grid[fileIndex])
+    gridIndex = int(round(row * gridW + col))
     ids[gridIndex] = entry["url"].split("/")[-1]
     filenames[gridIndex] = entry["imageUrl"].split("/")[-1]
     titles[gridIndex] = entry["title"]
