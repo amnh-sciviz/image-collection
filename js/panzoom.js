@@ -111,11 +111,7 @@ var PanZoom = (function() {
       $metadata = $("#metadata");
       $metadataContent = $("#metadata-content");
       $highlight.on("click", function(e){
-        if ($metadata.hasClass("active")) {
-          $metadata.removeClass("active");
-        } else {
-          _this.renderMetadata();
-        }
+        _this.renderMetadata();
       });
 
       $(".close-link").on("click", function(){
@@ -228,7 +224,7 @@ var PanZoom = (function() {
     currentDataIndex = dataIndex;
     this.renderTitle(dataIndex);
 
-    if ($metadata.hasClass("active")) this.renderMetadata(dataIndex);
+    // if ($metadata.hasClass("active")) this.renderMetadata(dataIndex);
   }
 
   PanZoom.prototype.renderMetadata = function(dataIndex){
