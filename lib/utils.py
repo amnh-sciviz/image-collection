@@ -45,8 +45,11 @@ def printProgress(step, total):
     sys.stdout.flush()
 
 def parseYears(strOrNumber):
-    # check for standard number between 1700 and 2100
-    if isinstance(strOrNumber, int) and 1700 <= strOrNumber <= 2100:
+    minYear = 1700
+    maxYear = 2020
+
+    # check for standard number between minYear and maxYear
+    if isinstance(strOrNumber, int) and minYear <= strOrNumber <= maxYear:
         return [strOrNumber]
 
     # otherwise, convert everything to string

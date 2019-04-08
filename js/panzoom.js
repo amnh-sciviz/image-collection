@@ -15,7 +15,8 @@ var PanZoom = (function() {
       debug: false,
       cols: 114,
       rows: 116,
-      highlightDelay: 10
+      highlightDelay: 10,
+      defaultZoomLevel: 3
     };
     opt = $.extend({}, defaults, config);
     this.init();
@@ -46,7 +47,8 @@ var PanZoom = (function() {
     viewer = OpenSeadragon({
         id: "panzoom",
         prefixUrl: opt.prefixUrl,
-        tileSources: opt.tileSources
+        tileSources: opt.tileSources,
+        homeFillsViewer: true
     });
     if (opt.debug) this.loadDebug();
   };

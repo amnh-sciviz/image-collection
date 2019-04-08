@@ -48,6 +48,10 @@ var App = (function() {
 
   App.prototype.loadListeners = function(){
     this.panzoom.loadListeners();
+
+    $(".toggle-link").on("click", function(){
+      $(this).parent().toggleClass("active");
+    })
   };
 
   App.prototype.loadPanzoom = function(){
@@ -67,6 +71,7 @@ var App = (function() {
     });
 
     this.panzoom.setMetadata(metadata);
+    this.datePicker = new DatePicker({data: metadata.years});
   };
 
   return App;

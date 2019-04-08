@@ -20,6 +20,8 @@ parser.add_argument('-gsize', dest="GRID_SIZE", default="114x116", help="Grid si
 parser.add_argument('-out', dest="OUTPUT_FILE", default="data/photographic_images.json", help="File for output")
 a = parser.parse_args()
 
+YEAR_RANGE = [1600, 2020]
+
 gridW, gridH = tuple([int(t) for t in a.GRID_SIZE.split("x")])
 
 # Make sure output dirs exist
@@ -34,7 +36,7 @@ fileCount = len(imageFiles)
 print("Loaded %s files" % fileCount)
 
 for i, d in enumerate(data):
-    data[i]["years"] = parseYears(d["date"])
+    data[i]["years"] = [y for y in parseYears(d["date"]) if YEAR_RANGE[0] <= y <= YEAR_RANGE[1]]
 
 if len(data) <= 0:
     print("No data found")

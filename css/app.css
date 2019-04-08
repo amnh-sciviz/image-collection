@@ -43,7 +43,8 @@ body {
   background: left top no-repeat;
   background-size: contain;
 }
-a.close-link {
+a.close-link,
+a.toggle-link {
   display: block;
   position: absolute;
   top: -40px;
@@ -105,6 +106,48 @@ a.button:hover {
 .highlight h2.active {
   opacity: 1;
   display: block;
+}
+
+.datepicker-wrapper {
+  position: absolute;
+  width: 40vw;
+  height: 20vh;
+  bottom: 0;
+  right: 20px;
+  transform: translate3d(0, 100%, 0);
+  transition: transform 0.5s ease-in-out;
+}
+.datepicker-wrapper.active {
+  transform: translate3d(0, 0, 0);
+}
+.datepicker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgba(245, 245, 245, 0.9);
+  box-shadow: 0 0 2px 2px rgba(0,0,0,0.3);
+}
+.datepicker line,
+.datepicker path {
+  stroke: black;
+}
+.datepicker text {
+  fill: black;
+}
+.datepicker-wrapper a.toggle-link {
+  left: auto;
+  right: 0;
+  top: -60px;
+  height: 60px;
+  padding: 0 2rem;
+  line-height: 60px;
+  font-size: 2vmin;
+  background: #004BB4;
+}
+.datepicker-wrapper a.toggle-link:hover {
+  background: #0c5ed1;
 }
 
 .debug {
