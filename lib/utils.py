@@ -1,6 +1,7 @@
 
 import os
 from PIL import Image
+import re
 import sys
 
 def fillImage(img, w, h):
@@ -42,3 +43,49 @@ def printProgress(step, total):
     sys.stdout.write('\r')
     sys.stdout.write("%s%%" % round(1.0*step/total*100,2))
     sys.stdout.flush()
+
+def parseYears(strOrNumber):
+    # check for standard number between 1700 and 2100
+    if isinstance(strOrNumber, int) and 1700 <= strOrNumber <= 2100:
+        return [strOrNumber]
+
+    # otherwise, convert everything to string
+    s = str(strOrNumber)
+
+    # remove stuff from the edges
+    s = s.strip('[]approximately?, ')
+
+    # remove spaces
+    s = s.replace(" ","")
+
+    # standard year, e.g. 1900
+    if re.match(r'^[12][0-9]{3}$', s):
+        return [int(s)]
+
+    # year plus month (plus date), e.g. 1903-02 or 1903-03-12; just take the year
+    if re.match(r'^[12][0-9]{3}\-[0-9]{2}(\-[0-9]{2})?$', s):
+        return [int(s.split("-")[0])]
+
+    # year range, e.g. 1900-1910
+    if re.match(r'^[12][0-9]{3}\-[12][0-9]{3}$', s):
+        yearFrom, yearTo = tuple([int(y) for y in s.split("-")])
+        # add each year
+        if yearTo > yearFrom:
+            return list(range(yearFrom, yearTo+1)) # need to add one for last year to be inclusive
+        # range going backwards, just take the first year
+        else:
+            return [yearFrom]
+
+    # year in the beginning?
+    if re.match(r'^[12][0-9]{3}', s):
+        return [int(s[:4])]
+
+    # year anywhere in the string?
+    m = re.match(r'.*([12][0-9]{3}).*', s)
+    if m:
+        return [int(m.group(1))]
+
+    # if len(s) > 0 and s != "Unknown":
+    #     print(s)
+
+    return []

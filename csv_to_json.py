@@ -33,6 +33,9 @@ imageFiles = sorted(imageFiles)
 fileCount = len(imageFiles)
 print("Loaded %s files" % fileCount)
 
+for i, d in enumerate(data):
+    data[i]["years"] = parseYears(d["date"])
+
 if len(data) <= 0:
     print("No data found")
     sys.exit()
@@ -66,6 +69,7 @@ print("Image base URL: %s" % imageBaseUrl)
 ids = ["" for i in range(gridW*gridH)]
 filenames = ["" for i in range(gridW*gridH)]
 titles = ["" for i in range(gridW*gridH)]
+years = [[] for i in range(gridW*gridH)]
 
 for fileIndex, dataIndex in enumerate(matchedEntries):
     entry = data[dataIndex]
@@ -74,13 +78,15 @@ for fileIndex, dataIndex in enumerate(matchedEntries):
     ids[gridIndex] = entry["url"].split("/")[-1]
     filenames[gridIndex] = entry["imageUrl"].split("/")[-1]
     titles[gridIndex] = entry["title"]
+    years[gridIndex] = entry["years"]
 
 jsonData = {
     "itemBaseUrl": itemBaseUrl,
     "imageBaseUrl": imageBaseUrl,
     "ids": ids,
     "filenames": filenames,
-    "titles": titles
+    "titles": titles,
+    "years": years
 }
 
 with open(a.OUTPUT_FILE, 'w') as f:
