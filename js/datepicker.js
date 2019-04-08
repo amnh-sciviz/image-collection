@@ -6,10 +6,12 @@ var DatePicker = (function() {
   var svg, $svg;
   var svgWidth, svgHeight, graphWidth, graphHeight;
   var xRange, yRange;
+  var resizeTimeout;
 
   function DatePicker(config) {
     var defaults = {
-      margin: {top: 20, right: 20, bottom: 30, left: 40}
+      margin: {top: 20, right: 20, bottom: 30, left: 40},
+      resizeDelay: 500
     };
     opt = $.extend({}, defaults, config);
     this.init();
@@ -74,6 +76,14 @@ var DatePicker = (function() {
           .call(d3.axisLeft(yRange));
   };
 
+  DatePicker.prototype.onResize = function(){
+    var _this = this;
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function(){
+      _this.reloadUI();
+    }, opt.resizeDelay);
+  };
+
   DatePicker.prototype.parseData = function(){
 
     var rawData = opt.data;
@@ -97,6 +107,11 @@ var DatePicker = (function() {
     });
 
     valueRange = [0, _.max(data, function(d){ return d.count; })];
+  };
+
+  DatePicker.prototype.reloadUI = function(){
+    $svg.empty();
+    this.loadUI();
   };
 
   return DatePicker;

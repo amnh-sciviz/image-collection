@@ -47,11 +47,17 @@ var App = (function() {
   };
 
   App.prototype.loadListeners = function(){
+    var _this = this;
+
     this.panzoom.loadListeners();
 
     $(".toggle-link").on("click", function(){
       $(this).parent().toggleClass("active");
-    })
+    });
+
+    $(window).on("resize", function(){
+      _this.datePicker && _this.datePicker.onResize();
+    });
   };
 
   App.prototype.loadPanzoom = function(){
