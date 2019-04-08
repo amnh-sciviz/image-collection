@@ -15,24 +15,10 @@ var PanZoom = (function() {
       debug: false,
       cols: 114,
       rows: 116,
-      highlightDelay: 10,
-      metadataUrl: "data/photographic_images.json"
+      highlightDelay: 10
     };
     opt = $.extend({}, defaults, config);
     this.init();
-  }
-
-  function loadJSONData(url){
-    var deferred = $.Deferred();
-    $.getJSON(url, function(data) {
-      console.log("Loaded data.");
-      deferred.resolve(data);
-    });
-    return deferred.promise();
-  }
-
-  function floorToNearest(value, nearest) {
-    return Math.floor(value / nearest) * nearest;
   }
 
   function getViewportDetails(){
@@ -62,19 +48,7 @@ var PanZoom = (function() {
         prefixUrl: opt.prefixUrl,
         tileSources: opt.tileSources
     });
-
-    this.loadData();
-    this.loadListeners();
-
     if (opt.debug) this.loadDebug();
-  };
-
-  PanZoom.prototype.loadData = function(){
-    var _this = this;
-    var dataPromise = loadJSONData(opt.metadataUrl);
-    $.when(dataPromise).done(function(results){
-      _this.onDataLoad(results);
-    });
   };
 
   PanZoom.prototype.loadDebug = function(){
@@ -140,10 +114,6 @@ var PanZoom = (function() {
     }, opt.highlightDelay);
 
     this.onMouseMove();
-  };
-
-  PanZoom.prototype.onDataLoad = function(results){
-    metadata = results;
   };
 
   PanZoom.prototype.onMouseMove = function(){
@@ -240,11 +210,13 @@ var PanZoom = (function() {
     }
 
     var title = metadata.titles[dataIndex];
+    var yearStr = metadata.yearStrings[dataIndex];
     var filename = metadata.filenames[dataIndex];
     var url = metadata.itemBaseUrl + id;
     var imageUrl = metadata.imageBaseUrl + filename;
 
     var html = '<h2>' + title + '</h2>';
+    if (yearStr.length > 0) html += '<h3>' + yearStr + '</h3>';
     html += '<div class="metadata-image" style="background-image: url('+imageUrl+');"></div>';
     html += '<a href="'+url+'" class="button" target="_blank">View on full record</a>';
     $metadataContent.html(html)
@@ -263,14 +235,16 @@ var PanZoom = (function() {
       return;
     }
 
+    var yearStr = metadata.yearStrings[dataIndex];
+    if (yearStr.length > 0 && !title.endsWith(yearStr)) title += ' (' + yearStr + ')';
+
     $title.text(title).addClass("active");
   }
 
+  PanZoom.prototype.setMetadata = function(data){
+    metadata = data;
+  }
 
   return PanZoom;
 
 })();
-
-$(function() {
-  var app = new PanZoom({});
-});
