@@ -7,6 +7,7 @@ var PanZoom = (function() {
   var lastWebPoint, isAnimating, animateTimeout;
   var metadata, currentDataIndex;
   var $highlight, $title, $metadata, $metadataContent, $debug;
+  var overlay, $overlay;
 
   function PanZoom(config) {
     var defaults = {
@@ -98,6 +99,8 @@ var PanZoom = (function() {
         e.preventDefaultAction = true;
       });
 
+      _this.loadOverlay();
+
       tracker.setTracking(true);
 
       viewer.addHandler('animation', function(){
@@ -110,6 +113,26 @@ var PanZoom = (function() {
     });
   };
 
+  PanZoom.prototype.loadOverlay = function(){
+    var $el = $("#panzoom");
+    var w = $el.width();
+    var h = $el.height();
+    var app = new PIXI.Application({width: w, height: h, transparent: true});
+    overlay = new PIXI.Graphics();
+    app.stage.addChild(overlay);
+
+    $overlay = $(app.view);
+    $overlay.css({
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+      "z-index": 0
+    })
+    $(".openseadragon-canvas").append($overlay);
+  };
+
   PanZoom.prototype.onAnimation = function(e){
     isAnimating = true;
     $highlight.removeClass("active");
@@ -118,6 +141,11 @@ var PanZoom = (function() {
     animateTimeout = setTimeout(function(){
       isAnimating = false;
     }, opt.highlightDelay);
+
+    // overlay.clear();
+    // overlay.beginFill(0xff0000, 0.5);
+    // overlay.drawRect(400, 400, 800, 800);
+    // overlay.endFill();
 
     this.onMouseMove();
   };

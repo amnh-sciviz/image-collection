@@ -80,6 +80,7 @@ a.button:hover {
   transform-origin: 0 0;
   transition: opacity 0.5s ease-in-out;
   display: none;
+  z-index: 10;
   /* z-index: 1000; */
 }
 .highlight.active {
