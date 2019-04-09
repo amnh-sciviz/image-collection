@@ -3,14 +3,15 @@
 var DatePicker = (function() {
 
   var opt, data, yearRange, valueRange;
-  var svg, $svg;
+  var svg, $svg, $dwindow, $dcontainer;
+  var $yearStart, $yearEnd, $bgWest, $bgEast, resizeHelperWidth;
   var svgWidth, svgHeight, graphWidth, graphHeight;
   var xRange, yRange;
   var resizeTimeout;
 
   function DatePicker(config) {
     var defaults = {
-      margin: {top: 20, right: 20, bottom: 30, left: 40},
+      margin: {top: 40, right: 20, bottom: 30, left: 40},
       resizeDelay: 500
     };
     opt = $.extend({}, defaults, config);
@@ -18,13 +19,38 @@ var DatePicker = (function() {
   }
 
   DatePicker.prototype.init = function(){
+    $dcontainer = $('#datepicker-container');
+    $dwindow = $('#datepicker-window');
+
     this.parseData();
     this.loadUI();
+    this.loadListeners();
+  };
+
+  DatePicker.prototype.loadListeners = function(){
+    var _this = this;
+
+    $dwindow.draggable({
+      containment: $dcontainer,
+      drag: function(event, ui) {
+        _this.onUIResizeOrDrag();
+      }
+    }).resizable({
+      containment: $dcontainer,
+      handles: "e, w",
+      resize: function(event, ui) {
+        _this.onUIResizeOrDrag();
+      },
+      create: function(event, ui) {
+        _this.onUICreate();
+      }
+    });
   };
 
   DatePicker.prototype.loadUI = function(){
     $svg = $('#datepicker');
     svg = d3.select('#datepicker');
+
     svgWidth = $svg.width();
     svgHeight = $svg.height();
 
@@ -74,6 +100,14 @@ var DatePicker = (function() {
       // add the y Axis
       svg.append("g")
           .call(d3.axisLeft(yRange));
+
+      // resize the datepicker window
+      $dcontainer.css({
+        width: graphWidth + "px",
+        height: graphHeight + "px",
+        top: margin.top + "px",
+        left: margin.left + "px"
+      })
   };
 
   DatePicker.prototype.onResize = function(){
@@ -82,6 +116,37 @@ var DatePicker = (function() {
     resizeTimeout = setTimeout(function(){
       _this.reloadUI();
     }, opt.resizeDelay);
+  };
+
+  DatePicker.prototype.onUICreate = function(){
+    $yearStart = $('<div class="year" aria-live="polite" aria-label="Filtered start year" />');
+    $yearEnd = $('<div class="year" aria-live="polite" aria-label="Filtered end year" />');
+    $(".ui-resizable-w").append($yearStart);
+    $(".ui-resizable-e").append($yearEnd);
+
+    $bgWest = $('<div class="resize-bg" />');
+    $bgEast = $('<div class="resize-bg" />');
+    $(".ui-resizable-w").append($bgWest);
+    $(".ui-resizable-e").append($bgEast);
+
+    resizeHelperWidth = $(".ui-resizable-w").width();
+
+    this.updateDomain(yearRange[0], yearRange[1]);
+  };
+
+  DatePicker.prototype.onUIResizeOrDrag = function(){
+    var cw = $dcontainer.width();
+    var w = $dwindow.width();
+    var nw = w / cw;
+    var x = parseFloat($dwindow.css("left"))
+    var nx = x / cw;
+
+    $bgWest.width(Math.max(x - resizeHelperWidth, 0));
+    $bgEast.width(Math.max(cw - w - x - resizeHelperWidth, 0));
+
+    var yearStart = Math.round(lerp(yearRange[0], yearRange[1], nx));
+    var yearEnd = Math.round(lerp(yearRange[0], yearRange[1], nx+nw));
+    this.updateDomain(yearStart, yearEnd);
   };
 
   DatePicker.prototype.parseData = function(){
@@ -112,6 +177,13 @@ var DatePicker = (function() {
   DatePicker.prototype.reloadUI = function(){
     $svg.empty();
     this.loadUI();
+    this.onUIResizeOrDrag();
+  };
+
+  DatePicker.prototype.updateDomain = function(yearStart, yearEnd){
+    $yearStart.text(yearStart);
+    $yearEnd.text(yearEnd);
+    $(document).trigger("domain.update", [yearStart, yearEnd]);
   };
 
   return DatePicker;

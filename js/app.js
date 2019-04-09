@@ -4,6 +4,19 @@ function floorToNearest(value, nearest) {
   return Math.floor(value / nearest) * nearest;
 }
 
+function lerp(a, b, percent) {
+  return (1.0*b - a) * percent + a;
+}
+
+function norm(value, a, b){
+  var denom = (b - a);
+  if (denom > 0 || denom < 0) {
+    return (1.0 * value - a) / denom;
+  } else {
+    return 0;
+  }
+}
+
 var App = (function() {
 
   var opt, metadata;

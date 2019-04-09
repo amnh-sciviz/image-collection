@@ -104,6 +104,10 @@ var PanZoom = (function() {
         _this.onAnimation();
       });
     });
+
+    $(document).on("domain.update", function(e, yearStart, yearEnd) {
+      // console.log(yearStart, yearEnd);
+    });
   };
 
   PanZoom.prototype.onAnimation = function(e){
