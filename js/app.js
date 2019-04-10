@@ -91,6 +91,7 @@ var App = (function() {
 
     this.panzoom.setMetadata(metadata);
     this.datePicker = new DatePicker({data: metadata.years});
+    this.treeMap = new TreeMap({data: metadata.subjectMeta});
   };
 
   return App;

@@ -6,6 +6,7 @@ var PanZoom = (function() {
   var imageW, imageH, cellW, cellH, ncellW, ncellH;
   var filterCtx, filterImData, filterData, minYear, maxYear;
   var filterTexture, filterSprite, spriteW, spriteH;
+  var yearFilterResults, subjectFilterResults;
   var lastWebPoint, isAnimating, animateTimeout;
   var metadata, currentDataIndex;
   var $highlight, $title, $metadata, $metadataContent, $debug;
@@ -26,9 +27,7 @@ var PanZoom = (function() {
   }
 
   function getViewportDetails(){
-    if (lastWebPoint===undefined) return false;
-
-    var webPoint = lastWebPoint;
+    var webPoint = lastWebPoint || new OpenSeadragon.Point(0,0);
     var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
     var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
     var imageOffset = viewer.viewport.viewportToImageCoordinates(viewer.viewport.pointFromPixel(new OpenSeadragon.Point(0,0), true)).negate();
@@ -54,6 +53,10 @@ var PanZoom = (function() {
         homeFillsViewer: true,
         // animationTime: 0
     });
+
+    yearFilterResults = new Array(opt.rows * opt.cols).fill(1);
+    subjectFilterResults = new Array(opt.rows * opt.cols).fill(1);
+
     if (opt.debug) this.loadDebug();
   };
 
@@ -115,6 +118,11 @@ var PanZoom = (function() {
       // console.log(yearStart, yearEnd);
       _this.onUpdateDomain(yearStart, yearEnd);
     });
+
+    $(document).on("subject.select", function(e, index) {
+      // console.log(index);
+      _this.onSelectSubject(index);
+    });
   };
 
   PanZoom.prototype.loadOverlay = function(){
@@ -151,6 +159,7 @@ var PanZoom = (function() {
       "z-index": 0
     })
     $(".openseadragon-canvas").append($overlay);
+    this.transformOverlay();
   };
 
   PanZoom.prototype.onAnimation = function(e){
@@ -171,7 +180,7 @@ var PanZoom = (function() {
       for (var col=0; col<opt.cols; col++) {
         var i = row * opt.cols + col;
         var r=0, g=0, b=0, a=0;
-        if (fdata !== undefined && fdata[i] < 1) {
+        if (yearFilterResults[i] < 1 || subjectFilterResults[i] < 1) {
           a = 200;
         }
         filterData[i*4] = r;
@@ -193,8 +202,24 @@ var PanZoom = (function() {
 
   };
 
+  PanZoom.prototype.onSelectSubject = function(subjectIndex){
+    subjectFilterResults = new Array(opt.rows * opt.cols).fill(1);
+
+    if (subjectIndex !== undefined && subjectIndex >= 0) {
+      for (var i=0; i<metadata.subjects.length; i++) {
+        var subjects = metadata.subjects[i];
+        var result = 0;
+        var slen = subjects.length;
+        if (slen > 0 && subjects.indexOf(subjectIndex) >= 0) result = 1;
+        subjectFilterResults[i] = result;
+      }
+    }
+
+    this.onFilter();
+  };
+
   PanZoom.prototype.onUpdateDomain = function(yearStart, yearEnd) {
-    var filterResults = new Array(opt.rows * opt.cols).fill(1);
+    yearFilterResults = new Array(opt.rows * opt.cols).fill(1);
 
     // only filter if total domain was changed
     if (yearStart > minYear || yearEnd < maxYear) {
@@ -204,11 +229,11 @@ var PanZoom = (function() {
         var result = 0;
         var ylen = years.length;
         if (ylen > 0 && years[0] >= yearStart && years[ylen-1] <= yearEnd) result = 1;
-        filterResults[i] = result;
+        yearFilterResults[i] = result;
       }
     }
 
-    this.onFilter(filterResults);
+    this.onFilter();
   };
 
   PanZoom.prototype.renderDebug = function(details){
