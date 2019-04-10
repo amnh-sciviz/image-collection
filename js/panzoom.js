@@ -4,10 +4,12 @@ var PanZoom = (function() {
 
   var viewer, tracker, opt;
   var imageW, imageH, cellW, cellH, ncellW, ncellH;
+  var filterCtx, filterImData, filterData, minYear, maxYear;
+  var filterTexture, filterSprite, spriteW, spriteH;
   var lastWebPoint, isAnimating, animateTimeout;
   var metadata, currentDataIndex;
   var $highlight, $title, $metadata, $metadataContent, $debug;
-  var overlay, $overlay;
+  var $overlay;
 
   function PanZoom(config) {
     var defaults = {
@@ -29,7 +31,7 @@ var PanZoom = (function() {
     var webPoint = lastWebPoint;
     var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
     var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-    var imageOffset = viewer.viewport.viewportToImageCoordinates(viewer.viewport.pointFromPixel(new OpenSeadragon.Point(0,0))).negate();
+    var imageOffset = viewer.viewport.viewportToImageCoordinates(viewer.viewport.pointFromPixel(new OpenSeadragon.Point(0,0), true)).negate();
     var zoom = viewer.viewport.getZoom(true);
     var imageZoom = viewer.viewport.viewportToImageZoom(zoom);
     var viewportSize = viewer.viewport.getContainerSize();
@@ -49,7 +51,8 @@ var PanZoom = (function() {
         id: "panzoom",
         prefixUrl: opt.prefixUrl,
         tileSources: opt.tileSources,
-        homeFillsViewer: true
+        homeFillsViewer: true,
+        // animationTime: 0
     });
     if (opt.debug) this.loadDebug();
   };
@@ -110,6 +113,7 @@ var PanZoom = (function() {
 
     $(document).on("domain.update", function(e, yearStart, yearEnd) {
       // console.log(yearStart, yearEnd);
+      _this.onUpdateDomain(yearStart, yearEnd);
     });
   };
 
@@ -117,10 +121,26 @@ var PanZoom = (function() {
     var $el = $("#panzoom");
     var w = $el.width();
     var h = $el.height();
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
     var app = new PIXI.Application({width: w, height: h, transparent: true});
-    overlay = new PIXI.Graphics();
-    app.stage.addChild(overlay);
 
+    // create a canvas to hold grid data
+    var canvas = document.createElement('canvas');
+    canvas.width = opt.cols;
+    canvas.height = opt.rows;
+    filterCtx = canvas.getContext('2d');
+    filterImData = filterCtx.createImageData(opt.cols, opt.rows);
+    filterData = filterImData.data;
+
+    this.onFilter();
+    filterTexture = new PIXI.Texture.from(canvas);
+    filterSprite = new PIXI.Sprite.from(filterTexture);
+    spriteW = filterSprite.width;
+    spriteH = filterSprite.height;
+    // filterSprite.width = w;
+    // filterSprite.height = h;
+
+    app.stage.addChild(filterSprite);
     $overlay = $(app.view);
     $overlay.css({
       position: "absolute",
@@ -142,12 +162,26 @@ var PanZoom = (function() {
       isAnimating = false;
     }, opt.highlightDelay);
 
-    // overlay.clear();
-    // overlay.beginFill(0xff0000, 0.5);
-    // overlay.drawRect(400, 400, 800, 800);
-    // overlay.endFill();
-
+    this.transformOverlay();
     this.onMouseMove();
+  };
+
+  PanZoom.prototype.onFilter = function(fdata){
+    for (var row=0; row<opt.rows; row++) {
+      for (var col=0; col<opt.cols; col++) {
+        var i = row * opt.cols + col;
+        var r=0, g=0, b=0, a=0;
+        if (fdata !== undefined && fdata[i] < 1) {
+          a = 200;
+        }
+        filterData[i*4] = r;
+        filterData[i*4+1] = g;
+        filterData[i*4+2] = b;
+        filterData[i*4+3] = a;
+      }
+    }
+    filterCtx.putImageData(filterImData, 0, 0);
+    filterTexture && filterTexture.update();
   };
 
   PanZoom.prototype.onMouseMove = function(){
@@ -157,6 +191,24 @@ var PanZoom = (function() {
     this.renderDebug(vp);
     if (!isAnimating) this.renderHighlight(vp);
 
+  };
+
+  PanZoom.prototype.onUpdateDomain = function(yearStart, yearEnd) {
+    var filterResults = new Array(opt.rows * opt.cols).fill(1);
+
+    // only filter if total domain was changed
+    if (yearStart > minYear || yearEnd < maxYear) {
+
+      for (var i=0; i<metadata.years.length; i++) {
+        var years = metadata.years[i];
+        var result = 0;
+        var ylen = years.length;
+        if (ylen > 0 && years[0] >= yearStart && years[ylen-1] <= yearEnd) result = 1;
+        filterResults[i] = result;
+      }
+    }
+
+    this.onFilter(filterResults);
   };
 
   PanZoom.prototype.renderDebug = function(details){
@@ -229,7 +281,7 @@ var PanZoom = (function() {
     this.renderTitle(dataIndex);
 
     // if ($metadata.hasClass("active")) this.renderMetadata(dataIndex);
-  }
+  };
 
   PanZoom.prototype.renderMetadata = function(dataIndex){
     if (metadata===undefined) return;
@@ -255,7 +307,7 @@ var PanZoom = (function() {
     html += '<a href="'+url+'" class="button" target="_blank">View on full record</a>';
     $metadataContent.html(html)
     $metadata.addClass('active');
-  }
+  };
 
   PanZoom.prototype.renderTitle = function(dataIndex){
     if (metadata===undefined) return;
@@ -273,11 +325,35 @@ var PanZoom = (function() {
     if (yearStr.length > 0 && !title.endsWith(yearStr)) title += ' (' + yearStr + ')';
 
     $title.text(title).addClass("active");
-  }
+  };
 
   PanZoom.prototype.setMetadata = function(data){
     metadata = data;
-  }
+
+    var flatYearData = _.flatten(metadata.years, true);
+    minYear = _.min(flatYearData);
+    maxYear = _.max(flatYearData);
+  };
+
+  PanZoom.prototype.transformOverlay = function(){
+    var vp = getViewportDetails();
+    if (!vp) return false;
+
+    // get the perceived/scaled width/height
+    var scale = vp.imageZoom;
+    var sImageW = imageW * scale;
+    var sImageH = imageH * scale;
+
+    var spriteScaleX = sImageW / spriteW;
+    var spriteScaleY = sImageH / spriteH;
+
+    var offset = vp.imageOffset;
+
+    filterSprite.scale.x = spriteScaleX;
+    filterSprite.scale.y = spriteScaleY;
+    filterSprite.position.x = offset.x * scale;
+    filterSprite.position.y = offset.y * scale;
+  };
 
   return PanZoom;
 
