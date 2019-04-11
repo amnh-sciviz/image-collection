@@ -43,19 +43,6 @@ body {
   background: left top no-repeat;
   background-size: contain;
 }
-a.close-link,
-a.toggle-link {
-  display: block;
-  position: absolute;
-  top: -40px;
-  left: 0;
-  height: 40px;
-  padding: 0 1rem;
-  line-height: 40px;
-  background: rgba(0,0,0,0.9);
-  color: white;
-  text-decoration: none;
-}
 a.button {
   color: white;
   background: #004BB4;
@@ -66,6 +53,17 @@ a.button {
 }
 a.button:hover {
   background: #0c5ed1;
+}
+a.close-link,
+a.toggle-link {
+  display: block;
+  position: absolute;
+  top: -40px;
+  left: 0;
+  height: 40px;
+  padding: 0 1rem;
+  line-height: 40px;
+  margin: 0;
 }
 
 .highlight {
