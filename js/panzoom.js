@@ -10,7 +10,7 @@ var PanZoom = (function() {
   var lastWebPoint, isAnimating, animateTimeout;
   var metadata, currentDataIndex;
   var $highlight, $title, $metadata, $metadataContent, $debug;
-  var $overlay;
+  var $overlay, pixiApp;
 
   function PanZoom(config) {
     var defaults = {
@@ -46,6 +46,7 @@ var PanZoom = (function() {
   }
 
   PanZoom.prototype.init = function(){
+
     viewer = OpenSeadragon({
         id: "panzoom",
         prefixUrl: opt.prefixUrl,
@@ -130,7 +131,7 @@ var PanZoom = (function() {
     var w = $el.width();
     var h = $el.height();
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    var app = new PIXI.Application({width: w, height: h, transparent: true});
+    pixiApp = new PIXI.Application({width: w, height: h, transparent: true});
 
     // create a canvas to hold grid data
     var canvas = document.createElement('canvas');
@@ -148,8 +149,8 @@ var PanZoom = (function() {
     // filterSprite.width = w;
     // filterSprite.height = h;
 
-    app.stage.addChild(filterSprite);
-    $overlay = $(app.view);
+    pixiApp.stage.addChild(filterSprite);
+    $overlay = $(pixiApp.view);
     $overlay.css({
       position: "absolute",
       width: "100%",
@@ -200,6 +201,14 @@ var PanZoom = (function() {
     this.renderDebug(vp);
     if (!isAnimating) this.renderHighlight(vp);
 
+  };
+
+  PanZoom.prototype.onResize = function(){
+    var $el = $("#panzoom");
+    var w = $el.width();
+    var h = $el.height();
+    pixiApp.renderer.resize(w, h);
+    this.transformOverlay();
   };
 
   PanZoom.prototype.onSelectSubject = function(subjectIndex){

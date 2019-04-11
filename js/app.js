@@ -70,6 +70,8 @@ var App = (function() {
 
     $(window).on("resize", function(){
       _this.datePicker && _this.datePicker.onResize();
+      _this.treeMap && _this.treeMap.onResize();
+      _this.panzoom.onResize();
     });
   };
 

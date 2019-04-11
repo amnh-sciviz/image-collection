@@ -6,10 +6,12 @@ var TreeMap = (function() {
   var opt, data;
   var $svg, svg, width, height;
   var treemap, count;
+  var resizeTimeout;
 
   function TreeMap(config) {
     var defaults = {
-      displaySubjects: 16
+      displaySubjects: 16,
+      resizeDelay: 500
     };
     opt = $.extend({}, defaults, config);
     this.init();
@@ -105,7 +107,15 @@ var TreeMap = (function() {
     }
 
     $(document).trigger("subject.select", [index]);
-  }
+  };
+
+  TreeMap.prototype.onResize = function(){
+    var _this = this;
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function(){
+      _this.reloadUI();
+    }, opt.resizeDelay);
+  };
 
   TreeMap.prototype.parseData = function(){
     var d = opt.data;
@@ -125,6 +135,13 @@ var TreeMap = (function() {
     data = {
       "name": "Subjects",
       "children": nodes
+    }
+  };
+
+  TreeMap.prototype.reloadUI = function(){
+    if ($svg) {
+      $svg.empty();
+      this.loadUI();
     }
   };
 

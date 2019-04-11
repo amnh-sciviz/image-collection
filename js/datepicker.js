@@ -3,7 +3,7 @@
 var DatePicker = (function() {
 
   var opt, data, yearRange, valueRange;
-  var svg, $svg, $dwindow, $dcontainer;
+  var svg, $svg, $dwindow, $dcontainer, $dragAndResize;
   var $yearStart, $yearEnd, $bgWest, $bgEast, resizeHelperWidth;
   var svgWidth, svgHeight, graphWidth, graphHeight;
   var xRange, yRange;
@@ -30,7 +30,7 @@ var DatePicker = (function() {
   DatePicker.prototype.loadListeners = function(){
     var _this = this;
 
-    $dwindow.draggable({
+    $dragAndResize = $dwindow.draggable({
       containment: $dcontainer,
       drag: function(event, ui) {
         _this.onUIResizeOrDrag();
@@ -44,6 +44,8 @@ var DatePicker = (function() {
       create: function(event, ui) {
         _this.onUICreate();
       }
+    }).on('resize', function (e) {
+      e.stopPropagation();
     });
   };
 
@@ -175,8 +177,16 @@ var DatePicker = (function() {
   };
 
   DatePicker.prototype.reloadUI = function(){
+    // console.log("Reloading...")
     $svg.empty();
     this.loadUI();
+    if ($dragAndResize) {
+      $dragAndResize.resizable("destroy").draggable("destroy").off("resize");
+      $dwindow.remove();
+      $dwindow = $('<div id="datepicker-window" class="datepicker-window"></div>');
+      $dcontainer.append($dwindow);
+      this.loadListeners();
+    }
     this.onUIResizeOrDrag();
   };
 
