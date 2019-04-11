@@ -7,7 +7,7 @@ var PanZoom = (function() {
   var filterCtx, filterImData, filterData, minYear, maxYear;
   var filterTexture, filterSprite, spriteW, spriteH;
   var yearFilterResults, subjectFilterResults;
-  var lastWebPoint, isAnimating, animateTimeout;
+  var lastWebPoint, isAnimating, animateTimeout, isTouch;
   var metadata, currentDataIndex;
   var $highlight, $title, $metadata, $metadataContent, $debug;
   var $overlay, pixiApp;
@@ -57,6 +57,7 @@ var PanZoom = (function() {
 
     yearFilterResults = new Array(opt.rows * opt.cols).fill(1);
     subjectFilterResults = new Array(opt.rows * opt.cols).fill(1);
+    isTouch = isTouchDevice();
 
     if (opt.debug) this.loadDebug();
   };
@@ -94,17 +95,27 @@ var PanZoom = (function() {
       $title = $("#highlight-title");
       $metadata = $("#metadata");
       $metadataContent = $("#metadata-content");
-      $highlight.on("click", function(e){
-        _this.renderMetadata();
-      });
+
 
       $(".close-link").on("click", function(){
         $metadata.removeClass("active");
       });
 
-      viewer.addHandler('canvas-click', function(e){
-        e.preventDefaultAction = true;
-      });
+      if (isTouch) {
+        viewer.addHandler('canvas-click', function(e){
+          e.preventDefaultAction = true;
+          lastWebPoint = e.position;
+          _this.onMouseMove();
+          _this.renderMetadata();
+        });
+      } else {
+        viewer.addHandler('canvas-click', function(e){
+          e.preventDefaultAction = true;
+        });
+        $highlight.on("click", function(e){
+          _this.renderMetadata();
+        });
+      }
 
       _this.loadOverlay();
 
