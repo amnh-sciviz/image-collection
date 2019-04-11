@@ -6,7 +6,7 @@ var TreeMap = (function() {
   var opt, data;
   var $svg, svg, width, height;
   var treemap, count;
-  var resizeTimeout;
+  var resizeTimeout, $reset;
 
   function TreeMap(config) {
     var defaults = {
@@ -37,6 +37,11 @@ var TreeMap = (function() {
 
   TreeMap.prototype.loadListeners = function(){
     var _this = this;
+
+    $reset = $("#reset-subject-filter");
+    $reset.on('click', function(e){
+      _this.resetFilter();
+    })
 
     $svg.on('click', 'g', function(e) {
       _this.onClick($(this));
@@ -101,9 +106,11 @@ var TreeMap = (function() {
       index = -1;
       $gs.removeClass("inactive");
       $g.removeClass("active");
+      $reset.removeClass("active");
     } else {
       $gs.removeClass("active").addClass("inactive");
       $g.removeClass("inactive").addClass("active");
+      $reset.addClass("active");
     }
 
     $(document).trigger("subject.select", [index]);
@@ -143,6 +150,13 @@ var TreeMap = (function() {
       $svg.empty();
       this.loadUI();
     }
+  };
+
+  TreeMap.prototype.resetFilter = function(){
+    $reset.removeClass("active");
+    var $gs = $svg.children(".node");
+    $gs.removeClass("active inactive");
+    $(document).trigger("subject.select", [-1]);
   };
 
   return TreeMap;

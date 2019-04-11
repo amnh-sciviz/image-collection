@@ -3,7 +3,7 @@
 var DatePicker = (function() {
 
   var opt, data, yearRange, valueRange;
-  var svg, $svg, $dwindow, $dcontainer, $dragAndResize;
+  var svg, $svg, $dwindow, $dcontainer, $dragAndResize, $reset;
   var $yearStart, $yearEnd, $bgWest, $bgEast, resizeHelperWidth;
   var svgWidth, svgHeight, graphWidth, graphHeight;
   var xRange, yRange;
@@ -21,13 +21,15 @@ var DatePicker = (function() {
   DatePicker.prototype.init = function(){
     $dcontainer = $('#datepicker-container');
     $dwindow = $('#datepicker-window');
+    $reset = $("#reset-date-filter");
 
     this.parseData();
     this.loadUI();
+    this.loadDragAndResize();
     this.loadListeners();
   };
 
-  DatePicker.prototype.loadListeners = function(){
+  DatePicker.prototype.loadDragAndResize = function(){
     var _this = this;
 
     $dragAndResize = $dwindow.draggable({
@@ -46,6 +48,14 @@ var DatePicker = (function() {
       }
     }).on('resize', function (e) {
       e.stopPropagation();
+    });
+  };
+
+  DatePicker.prototype.loadListeners = function(){
+    var _this = this;
+
+    $reset.on("click", function(){
+      _this.resetFilter();
     });
   };
 
@@ -185,14 +195,20 @@ var DatePicker = (function() {
       $dwindow.remove();
       $dwindow = $('<div id="datepicker-window" class="datepicker-window"></div>');
       $dcontainer.append($dwindow);
-      this.loadListeners();
+      this.loadDragAndResize();
     }
     this.onUIResizeOrDrag();
+  };
+
+  DatePicker.prototype.resetFilter = function(){
+    this.reloadUI();
   };
 
   DatePicker.prototype.updateDomain = function(yearStart, yearEnd){
     $yearStart.text(yearStart);
     $yearEnd.text(yearEnd);
+    if (yearStart <= yearRange[0] && yearEnd >= yearRange[1]) $reset.removeClass("active");
+    else $reset.addClass("active");
     $(document).trigger("domain.update", [yearStart, yearEnd]);
   };
 
