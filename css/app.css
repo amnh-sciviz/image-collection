@@ -286,3 +286,18 @@ a.toggle-link {
 .debug.active {
   display: block;
 }
+
+.about-link {
+  position: absolute;
+  display: block;
+  padding: 1rem 2rem;
+  background: #004BB4;
+  color: white;
+  text-decoration: none;
+  top: 1rem;
+  right: 1rem;
+  z-index: 30;
+}
+.about-link:hover {
+  background: #0c5ed1;
+}

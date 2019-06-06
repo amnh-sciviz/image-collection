@@ -12,7 +12,7 @@ from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()
-parser.add_argument('-in', dest="INPUT_FILE", default="output/photographic_grid.csv", help="Input csv file with grid assignments")
+parser.add_argument('-in', dest="INPUT_FILE", default="data/photographic_grid.csv", help="Input csv file with grid assignments")
 parser.add_argument('-im', dest="IMAGE_FILES", default="images/photographic_thumbnails/*.jpg", help="Input file pattern")
 parser.add_argument('-tile', dest="TILE_SIZE", default="128x128", help="Tile size in pixels")
 parser.add_argument('-grid', dest="GRID_SIZE", default="114x116", help="Grid size in cols x rows")

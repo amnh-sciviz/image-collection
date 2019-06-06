@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>AMNH Photographic Collection</title>
+  <meta name="description" content="AMNH Photographic Collection organized by image similarity">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:image" content="https://amnh-sciviz.github.io/image-collection/img/amnh_photographic_collection_matrix.jpg" />
+  <meta name="image_src" content="https://amnh-sciviz.github.io/image-collection/img/amnh_photographic_collection_matrix.jpg">
+
+  <link rel="stylesheet" href="css/vendor/normalize.css">
+  <style type="text/css">
+    body {
+      font-family: sans-serif;
+      background: black;
+      color: white;
+      font-size: 16px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+      box-sizing: border-box;
+      font-size: 1.3rem;
+    }
+    p {
+      line-height: 1.8;
+    }
+    a {
+      color: white;
+    }
+    .mosaic {
+      display: block;
+      width: 90%;
+      height: 300px;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+    }
+    .visually-hidden { /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden;
+      clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+      clip: rect(1px, 1px, 1px, 1px);
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container" role="main">
+    <h1>About this project</h1>
+
+    <p><a href="index.html" class="mosaic" style="background-image: url(img/amnh_photographic_collection_matrix.jpg)">
+      <span class="visually-hidden">Go back to the visualization page</span>
+    </a></p>
+
+    <p>
+      <a href="index.html">This is an experiment</a> by the <a href="https://www.amnh.org/" target="_blank">American Museum of Natural History</a>'s <a href="https://www.amnh.org/research/research-library" target="_blank">Research Library</a> and <a href="https://amnh-sciviz.github.io/" target="_blank">Science Visualization Group</a>. The images that you see represents 13,212 digitized images from the Museum's <a href="http://lbry-web-007.amnh.org/digital/collections/show/2" target="_blank">Photographic Collection</a>. Machine learning is used to analyze the images and extract a variety of hidden features which are used to organize the images in the mosaic that you see. The effect is that similar images are grouped closer together without referring to the images' metadata. Filters such as date created and subject have been added from the Library's metadata to compare how humans and machines organize the images. You can view the source code and technical documentation in the <a href="https://github.com/amnh-sciviz/image-collection" target="_blank">open source code repository</a>.
+    </p>
+
+    <p>
+      The <a href="http://lbry-web-007.amnh.org/digital/collections/show/2" target="_blank">Photographic Collection</a> at the <a href="https://www.amnh.org/research/research-library" target="_blank">Research Library</a> of the <a href="https://www.amnh.org/" target="_blank">American Museum of Natural History</a> consists of over one million black-and-white photographs including approximately 850,000 negatives and 900 collections of photographic prints containing 125,000 individual photographs. In addition, there are more than 200,000 color transparencies, including 35 mm slides and over 55,000 lantern slides, many hand-colored, that were once used for lectures and loaned to schools throughout New York State. The images showcased here are a sampling of these vast collections housed at the Museum Library.
+    </p>
+
+  </div>
+</body>
+
+</html>
