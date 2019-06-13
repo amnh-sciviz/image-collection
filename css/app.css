@@ -287,17 +287,23 @@ a.toggle-link {
   display: block;
 }
 
-.about-link {
+.description {
   position: absolute;
   display: block;
-  padding: 1rem 2rem;
-  background: #004BB4;
+  padding: 0 1rem;
+  background: rgba(0,0,0,0.8);
   color: white;
-  text-decoration: none;
   top: 1rem;
   right: 1rem;
   z-index: 30;
+  width: 240px;
 }
-.about-link:hover {
-  background: #0c5ed1;
+.description h2,
+.description p {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: normal;
+}
+.description a {
+  color: white;
 }

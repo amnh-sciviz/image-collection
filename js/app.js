@@ -57,8 +57,8 @@ var App = (function() {
 
   App.prototype.init = function(){
     this.loadPanzoom();
-    this.loadData();
     this.loadListeners();
+    this.loadData();
 
     if (opt.debug) this.loadDebug();
   };
