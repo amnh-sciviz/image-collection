@@ -188,6 +188,8 @@ var PanZoom = (function() {
   };
 
   PanZoom.prototype.onFilter = function(fdata){
+    if (filterData===undefined) return;
+    
     for (var row=0; row<opt.rows; row++) {
       for (var col=0; col<opt.cols; col++) {
         var i = row * opt.cols + col;
